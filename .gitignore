@@ -1,0 +1,28 @@
+# ── 대용량 데이터셋 (GitHub 비추적, 각자 로컬/Kaggle/AIHub에서 확보)
+/dfire/
+/089.화재 발생 예측 영상_고도화_영상 기반 화재 감시 및 발생 위치 탐지 데이터/
+
+# ── 학습 구성: yaml 만 추적, train 서브셋(하드링크 이미지)은 제외
+/compositions/*/
+!/compositions/*.yaml
+
+# ── 학습 산출물 (가중치·로그 — 로컬 보존, 결과 그림은 04_figures로 복사해 추적)
+/runs/
+
+# ── 모델 가중치 / 압축 파일
+*.pt
+*.pth
+*.onnx
+*.engine
+*.zip
+
+# ── 자격증명 (절대 커밋 금지)
+kaggle.json
+*.key
+
+# ── 파이썬 캐시
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/

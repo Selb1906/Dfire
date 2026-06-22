@@ -1,0 +1,8 @@
+# DFire ablation 구성: c1_fire_only
+# 클래스 0=smoke, 1=fire / val·test 는 전체 DFire 고정
+train: C:/YangHyunHo/DFire/compositions/c1_fire_only/train/images
+val: C:/YangHyunHo/DFire/dfire/data/val/images
+test: C:/YangHyunHo/DFire/dfire/data/test/images
+
+names: ['smoke', 'fire']
+nc: 2
