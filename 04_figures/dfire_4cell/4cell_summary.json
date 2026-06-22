@@ -1,0 +1,114 @@
+[
+  {
+    "name": "E_C1",
+    "model": "yolo11n.pt",
+    "data": "c1_fire_only.yaml",
+    "batch": 64,
+    "elapsed_sec": 1460.1,
+    "best_pt": "C:\\YangHyunHo\\DFire\\runs\\E_C1\\weights\\best.pt",
+    "val": {
+      "map50": 0.3388035490507065,
+      "map50_95": 0.1817170723279155,
+      "precision": 0.33160615718352204,
+      "recall": 0.32036183601974183,
+      "smoke_ap50": 0.0,
+      "fire_ap50": 0.677607098101413,
+      "smoke_recall": 0.0,
+      "fire_recall": 0.6407236720394837
+    },
+    "test": {
+      "map50": 0.3251962931898834,
+      "map50_95": 0.16946837291231695,
+      "precision": 0.3208294724305248,
+      "recall": 0.3098581614689933,
+      "smoke_ap50": 0.0,
+      "fire_ap50": 0.6503925863797668,
+      "smoke_recall": 0.0,
+      "fire_recall": 0.6197163229379866
+    }
+  },
+  {
+    "name": "E_C3",
+    "model": "yolo11n.pt",
+    "data": "c3_balanced.yaml",
+    "batch": 64,
+    "elapsed_sec": 1677.0,
+    "best_pt": "C:\\YangHyunHo\\DFire\\runs\\E_C3\\weights\\best.pt",
+    "val": {
+      "map50": 0.7032260354919385,
+      "map50_95": 0.405776372700423,
+      "precision": 0.7279466773898555,
+      "recall": 0.6446997897963286,
+      "smoke_ap50": 0.7149178603044457,
+      "fire_ap50": 0.6915342106794313,
+      "smoke_recall": 0.6850797266514806,
+      "fire_recall": 0.6043198529411765
+    },
+    "test": {
+      "map50": 0.6910621301675663,
+      "map50_95": 0.38693436393156483,
+      "precision": 0.6984788456107591,
+      "recall": 0.6543992625063496,
+      "smoke_ap50": 0.6981457379208871,
+      "fire_ap50": 0.6839785224142456,
+      "smoke_recall": 0.6875811337083514,
+      "fire_recall": 0.6212173913043478
+    }
+  },
+  {
+    "name": "E_C4",
+    "model": "yolo11n.pt",
+    "data": "c4_balanced_nm.yaml",
+    "batch": 64,
+    "elapsed_sec": 2965.5,
+    "best_pt": "C:\\YangHyunHo\\DFire\\runs\\E_C4\\weights\\best.pt",
+    "val": {
+      "map50": 0.7488850900823452,
+      "map50_95": 0.42956294401758893,
+      "precision": 0.7444866892326335,
+      "recall": 0.6857626238673787,
+      "smoke_ap50": 0.7788335899333114,
+      "fire_ap50": 0.7189365902313789,
+      "smoke_recall": 0.7015945330296127,
+      "fire_recall": 0.6699307147051448
+    },
+    "test": {
+      "map50": 0.7362501274297488,
+      "map50_95": 0.41424984228308925,
+      "precision": 0.7461991271783397,
+      "recall": 0.668660132071567,
+      "smoke_ap50": 0.7652047768896868,
+      "fire_ap50": 0.7072954779698108,
+      "smoke_recall": 0.6875811337083514,
+      "fire_recall": 0.6497391304347826
+    }
+  },
+  {
+    "name": "E_C4_11s",
+    "model": "yolo11s.pt",
+    "data": "c4_balanced_nm.yaml",
+    "batch": 48,
+    "elapsed_sec": 3666.6,
+    "best_pt": "C:\\YangHyunHo\\DFire\\runs\\E_C4_11s\\weights\\best.pt",
+    "val": {
+      "map50": 0.7677649480178224,
+      "map50_95": 0.4437185902438185,
+      "precision": 0.7665450622145856,
+      "recall": 0.7031344214792978,
+      "smoke_ap50": 0.7954682915136077,
+      "fire_ap50": 0.7400616045220371,
+      "smoke_recall": 0.7215261958997722,
+      "fire_recall": 0.6847426470588235
+    },
+    "test": {
+      "map50": 0.7486627988610359,
+      "map50_95": 0.42296237186892177,
+      "precision": 0.7668966792784182,
+      "recall": 0.6722574454875547,
+      "smoke_ap50": 0.7759701999553523,
+      "fire_ap50": 0.7213553977667196,
+      "smoke_recall": 0.6923409779316313,
+      "fire_recall": 0.6521739130434783
+    }
+  }
+]
