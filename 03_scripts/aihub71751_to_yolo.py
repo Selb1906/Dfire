@@ -171,13 +171,21 @@ def write_items(items, img_out, lbl_out):
 
 
 def balance(buckets, nm_ratio, rng):
-    """FL:SM:NM = 1:1:nm_ratio. both 는 fire/smoke 양쪽 기여로 전량 유지."""
-    fire = buckets.get("fire", []); smoke = buckets.get("smoke", [])
-    both = buckets.get("both", []); nm = buckets.get("nm", [])
-    target = max(len(fire) + len(both), len(smoke) + len(both))
-    nm_target = int(target * nm_ratio)
-    if len(nm) > nm_target:
-        rng.shuffle(nm); nm = nm[:nm_target]
+    """FL:SM = 1:1 (이미지 단위), +NM = nm_ratio×.  (DFire C4 / 원래 AIHub 방법론과 일치)
+    both(fire+smoke 동시)는 양쪽 기여로 전량 유지. fire_only/smoke_only 는 min 으로 다운샘플 →
+    fire포함(=both+fire_only) == smoke포함(=both+smoke_only). NM 은 fire포함 수의 nm_ratio 로 캡.
+    """
+    fire = list(buckets.get("fire", []))    # fire-only
+    smoke = list(buckets.get("smoke", []))  # smoke-only
+    both = list(buckets.get("both", []))
+    nm = list(buckets.get("nm", []))
+    k = min(len(fire), len(smoke))          # fire_only==smoke_only → FL:SM 포함이미지 1:1
+    rng.shuffle(fire); rng.shuffle(smoke); rng.shuffle(nm)
+    fire, smoke = fire[:k], smoke[:k]
+    containing = k + len(both)              # fire포함 = smoke포함
+    nm = nm[:int(containing * nm_ratio)]
+    logger.info(f"[balance] fire_only={k} smoke_only={k} both={len(both)} "
+                f"nm={len(nm)} → FL포함=SM포함={containing}")
     return fire + smoke + both + nm
 
 
@@ -205,8 +213,11 @@ def main():
             continue
         img_out, lbl_out, buckets = convert_split(
             labels_root, source_root, dst, split, args.frame_step, rng)
-        items = balance(buckets, args.nm_ratio, rng) if args.balance \
-            else [x for v in buckets.values() for x in v]
+        # 균형은 train 에만 (val 은 자연분포 유지 — 평가 정합성, DFire val/test 원본 유지와 동일 원칙)
+        if args.balance and split == "train":
+            items = balance(buckets, args.nm_ratio, rng)
+        else:
+            items = [x for v in buckets.values() for x in v]
         logger.info(f"[{split}] 최종 {len(items)}장 기록 중...")
         write_items(items, img_out, lbl_out)
 
