@@ -1,0 +1,20 @@
+{
+  "name": "AIHub_C4",
+  "model": "yolo11n.pt",
+  "data": "D:\\AIHub_Fire\\yolo_071751\\data.yaml",
+  "batch": 64,
+  "train_imgs": 114462,
+  "val_imgs": 19080,
+  "elapsed_sec": 16064.3,
+  "best_pt": "C:\\YangHyunHo\\DFire\\runs\\AIHub_C4\\weights\\best.pt",
+  "val": {
+    "map50": 0.9131626115939343,
+    "map50_95": 0.6613814080120617,
+    "precision": 0.9048254977649928,
+    "recall": 0.8523489824126625,
+    "smoke_ap50": 0.8963200340706973,
+    "fire_ap50": 0.9300051891171713,
+    "smoke_recall": 0.8375084061869535,
+    "fire_recall": 0.8671895586383715
+  }
+}
