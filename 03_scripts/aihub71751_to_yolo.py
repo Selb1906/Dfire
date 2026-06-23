@@ -3,7 +3,7 @@
 ★ 상태: 2026-06-24 초안 — 원천 해제 완료 후 end-to-end 검증 필요(아래 ASSUMPTIONS 참조).
 기존 aihub_to_yolo.py(COCO 통짜 가정)는 이 데이터에 안 맞아 071751 전용으로 신규 작성.
 
-데이터 구조 (D:\AIHub_Fire\extracted):
+데이터 구조 (D:/AIHub_Fire/extracted):
   Training_source/화재현상/이미지/{불꽃|연기|...}/{씬타입}/{clip}/JPG/{clip}_..._NNNNN.jpg
   Training_labels/화재 현상/이미지/{불꽃|연기|...}/{씬타입}/{clip}/JSON/{clip}_..._NNNNN.json
   (Validation_* 동일 구조)
