@@ -3,13 +3,18 @@
 > 출처: RTX 5090 로컬 재학습. 수치 SSOT = `02_data_ssot/TRAINING_LOG.md` R8 섹션.
 > 가중치(best.pt)·전체 산출물은 `runs/`(git 비추적, 로컬 보존). 여기엔 논문용 그림만 추렸다.
 
-## 셀 정의
+## 셀 정의 (5셀)
 | 셀 | 모델 | 구성 |
 |----|------|------|
 | C1 | YOLO11n | fire-only (smoke 미학습) |
+| C2 | YOLO11n | 불균형 14:1 (소량 smoke) |
 | C3 | YOLO11n | 균형 1:1 |
 | C4 | YOLO11n | 균형 + 정상배경(NM) |
 | C4_11s | YOLO11s | C4 동일 데이터, 모델만 변경 |
+
+## 구성효과 그림 (수치 기반, plot_dfire_ablation.py)
+- `fig_dfire_composition.png` — 구성별 test mAP@0.5 + smoke AP (11n 고정, C1~C4)
+- `fig_dfire_model.png` — C4 11n vs 11s
 
 ## 파일
 - `{셀}_test_confusion_matrix.png` / `_norm.png` — **test 셋 혼동행렬**(논문 결과 그림)
@@ -18,5 +23,7 @@
 - `4cell_summary.json` — val·test 전체 수치 원본
 
 ## 핵심 (test mAP@0.5)
-C1 0.325 → C3 0.691 (+36.6%p, 균형) → C4 0.736 (+4.5%p, NM) → C4_11s 0.749 (+1.3%p, 모델).
-데이터 구성이 모델 크기보다 지배적. C1은 smoke AP=0(연기 미학습)으로 평균이 낮음 — fire AP 단독은 0.650.
+C1 0.325 → C2 0.455 → C3 0.691 → C4 0.736 → C4_11s 0.749.
+균형 총효과(C1→C3) +36.6%p, NM(C3→C4) +4.5%p ≫ 모델(11n→11s) +1.3%p — 데이터 구성이 모델보다 지배적.
+C1은 smoke AP=0(연기 미학습)으로 평균이 낮음(fire AP 단독 0.650).
+⚠️ AIHub의 "C2<C1(소량 smoke=노이즈)"은 DFire에서 **재현 안 됨**(C2 0.455>C1, fire AP도 단조 증가). 상세 = TRAINING_LOG R8 주석.
