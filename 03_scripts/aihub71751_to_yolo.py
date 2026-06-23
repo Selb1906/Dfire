@@ -41,8 +41,18 @@ logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
 CLASS_NAMES = ["smoke", "fire"]            # 0=smoke, 1=fire
-CATID_TO_YOLO = {1: 1, 2: 0}              # fl→fire(1), sm→smoke(0), 3(none)→무시
-FIRE_BRANCH = "화재 현상"                   # 라벨 측 브랜치명(공백 포함)
+# 이름 기반 매핑(파일별 categories 배열 사용 — categories_id 순서 가정 제거).
+NAME_TO_YOLO = {"fl": 1, "fire": 1, "sm": 0, "smoke": 0}  # none/기타 → 무시
+# 브랜치명이 split마다 다름: Training=`화재 현상`(공백O), Validation=`화재현상`(공백X)
+FIRE_BRANCHES = ["화재 현상", "화재현상"]
+FIRE_BRANCH = "화재 현상"                   # label_to_image 경로치환용(공백→제거)
+
+
+def find_branch(labels_root: Path):
+    for b in FIRE_BRANCHES:
+        if (labels_root / b).exists():
+            return labels_root / b
+    return None
 
 
 def bbox_xywh_to_yolo(bbox, w, h):
@@ -55,12 +65,12 @@ def bbox_xywh_to_yolo(bbox, w, h):
     return round(cx, 6), round(cy, 6), round(nw, 6), round(nh, 6)
 
 
-def label_to_image(json_path: Path, labels_root: Path, source_root: Path) -> Path:
-    """라벨 JSON 경로 → 대응 원천 이미지 경로 (ASSUMPTION A)."""
-    rel = json_path.relative_to(labels_root)
-    parts = ["화재현상" if p == FIRE_BRANCH else p for p in rel.parts]
-    parts = ["JPG" if p == "JSON" else p for p in parts]
-    return (source_root / Path(*parts)).with_suffix(".jpg")
+def label_to_image(json_path: Path, label_branch: Path, source_branch: Path) -> Path:
+    """라벨 JSON → 원천 이미지 경로. 브랜치명 가정 없이 '브랜치 이후 상대경로'를 원천 브랜치에 이어붙임.
+    (Training/Validation에서 `화재 현상`↔`화재현상` 공백 유무가 라벨·원천 간 교차하므로 이 방식이 안전.)"""
+    rel = json_path.relative_to(label_branch)          # 이미지/불꽃/.../JSON/x.json
+    parts = ["JPG" if p == "JSON" else p for p in rel.parts]
+    return (source_branch / Path(*parts)).with_suffix(".jpg")
 
 
 def parse_json(json_path: Path):
@@ -71,27 +81,26 @@ def parse_json(json_path: Path):
     w, h = img.get("width"), img.get("height")
     if not w or not h:
         return None, None
+    # 파일별 categories: index → name (전역 순서 가정 제거)
+    id2name = {c["category_index"]: str(c.get("category_name", "")).lower()
+               for c in d.get("categories", [])}
     lines = []
     for ann in d.get("annotations", []):
-        cid = ann.get("categories_id")
-        if cid not in CATID_TO_YOLO:        # 3(none) 등 무시
+        name = id2name.get(ann.get("categories_id"), "")
+        if name not in NAME_TO_YOLO:        # none/기타 무시
             continue
         bbox = ann.get("bbox")
         if not bbox or len(bbox) != 4 or bbox[2] <= 0 or bbox[3] <= 0:
             continue
-        cls = CATID_TO_YOLO[cid]
+        cls = NAME_TO_YOLO[name]
         cx, cy, nw, nh = bbox_xywh_to_yolo(bbox, w, h)
         lines.append(f"{cls} {cx} {cy} {nw} {nh}")
     scene_cls = (d.get("attributes", {}) or {}).get("class")
     return lines, scene_cls
 
 
-def collect(labels_root: Path):
-    """화재 현상 브랜치의 JSON 경로 수집 (clip별 그룹)."""
-    branch = labels_root / FIRE_BRANCH
-    if not branch.exists():
-        logger.warning(f"브랜치 없음: {branch}")
-        return {}
+def collect(branch: Path):
+    """화재(현상) 브랜치의 JSON 경로 수집 (clip별 그룹)."""
     by_clip = defaultdict(list)
     for jp in branch.rglob("JSON/*.json"):
         # clip = 부모의 부모 (……/{clip}/JSON/x.json)
@@ -119,8 +128,14 @@ def convert_split(labels_root, source_root, dst, split, frame_step, rng):
     img_out.mkdir(parents=True, exist_ok=True)
     lbl_out.mkdir(parents=True, exist_ok=True)
 
-    by_clip = collect(labels_root)
-    logger.info(f"[{split}] clip {len(by_clip)}개")
+    label_branch = find_branch(labels_root)
+    source_branch = find_branch(source_root)
+    if label_branch is None or source_branch is None:
+        logger.warning(f"[{split}] 브랜치 없음 (label={label_branch}, source={source_branch})")
+        return img_out, lbl_out, {}
+
+    by_clip = collect(label_branch)
+    logger.info(f"[{split}] clip {len(by_clip)}개 (label={label_branch.name}, source={source_branch.name})")
     buckets = defaultdict(list)   # category → [(img_path, lines, stem)]
     n_missing = 0
 
@@ -131,7 +146,7 @@ def convert_split(labels_root, source_root, dst, split, frame_step, rng):
             lines, _ = parse_json(jp)
             if lines is None:
                 continue
-            img_path = label_to_image(jp, labels_root, source_root)
+            img_path = label_to_image(jp, label_branch, source_branch)
             if not img_path.exists():
                 n_missing += 1
                 continue
