@@ -25,6 +25,7 @@ PROJECT = str(BASE / "runs")
 # (name, model, data.yaml, batch)
 CELLS = [
     ("E_C1",     "yolo11n.pt", str(CFG / "c1_fire_only.yaml"),    64),
+    ("E_C2",     "yolo11n.pt", str(CFG / "c2_imbalanced.yaml"),   64),
     ("E_C3",     "yolo11n.pt", str(CFG / "c3_balanced.yaml"),     64),
     ("E_C4",     "yolo11n.pt", str(CFG / "c4_balanced_nm.yaml"),  64),
     ("E_C4_11s", "yolo11s.pt", str(CFG / "c4_balanced_nm.yaml"),  48),

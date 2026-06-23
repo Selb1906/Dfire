@@ -1,0 +1,8 @@
+# DFire ablation 구성: c2_imbalanced
+# 클래스 0=smoke, 1=fire / val·test 는 전체 DFire 고정
+train: C:/YangHyunHo/DFire/compositions/c2_imbalanced/train/images
+val: C:/YangHyunHo/DFire/dfire/data/val/images
+test: C:/YangHyunHo/DFire/dfire/data/test/images
+
+names: ['smoke', 'fire']
+nc: 2

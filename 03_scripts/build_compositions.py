@@ -131,6 +131,18 @@ def main():
     c1_items = b["fire_only"] + b["both"]
     build_train("c1_fire_only", c1_items, keep_classes={1})
 
+    # ── C2: 불균형 14:1. fire 내용은 C1과 동일(smoke 제거) + smoke_only 소량 추가.
+    #     fire포함 = n_both + n_fire_only(=3828), smoke포함 = round(3828/14)=273
+    print("[2.5] C2 (불균형 14:1) 빌드...")
+    n_fire_img = n_both + n_fire_only
+    n_smoke_c2 = round(n_fire_img / 14)
+    smoke_c2 = even_sample(b["smoke_only"], n_smoke_c2)
+    # fire 포함 이미지: smoke 제거(keep {1}) — C1과 동일 fire 신호
+    build_train("c2_imbalanced", b["fire_only"] + b["both"], keep_classes={1})
+    # smoke_only 소량: 라벨 유지 — 약한 smoke 신호
+    build_train("c2_imbalanced", smoke_c2, keep_classes=None)
+    print(f"    fire포함={n_fire_img} smoke포함={len(smoke_c2)} (목표 14:1)")
+
     # ── C3: 엄격한 1:1. fire이미지 = both + fire_only = n_both + n_fire_only
     #     smoke이미지도 동일 수가 되도록 smoke_only 를 다운샘플.
     #     both 는 fire·smoke 양쪽에 기여하므로 both 전체 포함.
@@ -152,6 +164,7 @@ def main():
     # ── yaml 작성 (c4_yolo11s 는 c4 와 동일 데이터)
     print("[5] yaml 작성...")
     write_yaml("c1_fire_only", "c1_fire_only")
+    write_yaml("c2_imbalanced", "c2_imbalanced")
     write_yaml("c3_balanced", "c3_balanced")
     write_yaml("c4_balanced_nm", "c4_balanced_nm")
     write_yaml("c4_yolo11s", "c4_balanced_nm")  # 동일 데이터, 모델만 다름

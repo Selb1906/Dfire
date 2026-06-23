@@ -8,9 +8,9 @@ AI Hub 방재 데이터셋 → YOLO 형식 변환 스크립트 (멀티-데이터
   71472 — 화재영상 3D 객체 데이터 생성: 합성 증강
   기타  — 배경(NM) 데이터: 71679, 71677, 71330, 71682, 71850
 
-클래스 정의:
-  0 = fire   (FL, 불꽃/화염)
-  1 = smoke  (SM, 연기)
+클래스 정의 (DFire 규약과 통일 — 2026-06-24 변경, 기존 0=fire/1=smoke에서 반전):
+  0 = smoke  (SM, 연기)
+  1 = fire   (FL, 불꽃/화염)
   (normal/정상 씬은 레이블 없는 빈 txt → Hard Negative Mining 효과)
 
 영상→이미지 샘플링 (과적합 방지, R1~R3 교훈 반영):
@@ -52,34 +52,34 @@ from pathlib import Path
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
-# ── 클래스 정의
-CLASS_NAMES = ["fire", "smoke"]
+# ── 클래스 정의 (DFire 규약 통일: 0=smoke, 1=fire)
+CLASS_NAMES = ["smoke", "fire"]
 
 # ── AI Hub 카테고리명 → YOLO 클래스 ID 통합 매핑
 # 71751, 518, 71472 모두 포함. 71472 합성 데이터 카테고리 포함.
 CATEGORY_MAP: dict[str, int] = {
-    # 화재 (class 0)
-    "fire": 0,
-    "화재": 0,
-    "불꽃": 0,
-    "flame": 0,
-    "fire_label": 0,
-    "fl": 0,
-    # 연기 (class 1)
-    "smoke": 1,
-    "연기": 1,
-    "sm": 1,
-    "smoke_label": 1,
+    # 연기 (class 0)
+    "smoke": 0,
+    "연기": 0,
+    "sm": 0,
+    "smoke_label": 0,
+    # 화재 (class 1)
+    "fire": 1,
+    "화재": 1,
+    "불꽃": 1,
+    "flame": 1,
+    "fire_label": 1,
+    "fl": 1,
     # 518번 데이터셋 카테고리
-    "fire_indoor": 0,
-    "실내화재": 0,
-    "smoke_indoor": 1,
-    "실내연기": 1,
+    "fire_indoor": 1,
+    "실내화재": 1,
+    "smoke_indoor": 0,
+    "실내연기": 0,
     # 71472 합성 데이터 카테고리
-    "synthetic_fire": 0,
-    "synthetic_smoke": 1,
-    "3d_fire": 0,
-    "3d_smoke": 1,
+    "synthetic_fire": 1,
+    "synthetic_smoke": 0,
+    "3d_fire": 1,
+    "3d_smoke": 0,
 }
 
 # ── NM(정상) 비율 기본값: FL:SM:NM = 1:1:0.5
@@ -172,9 +172,9 @@ def convert_json(
 
         if lbl_lines:
             classes_in_img = {int(l.split()[0]) for l in lbl_lines}
-            if 0 in classes_in_img:
+            if 1 in classes_in_img:        # 1 = fire
                 class_counts["fire"] += 1
-            if 1 in classes_in_img:
+            if 0 in classes_in_img:        # 0 = smoke
                 class_counts["smoke"] += 1
         else:
             class_counts["normal"] += 1
@@ -202,7 +202,7 @@ def sample_video(
       3. phash 해밍 거리 ≤ 8 중복 제거
 
     label_class:
-        0 = fire, 1 = smoke, None = 레이블 없는 NM (빈 txt 생성)
+        1 = fire, 0 = smoke, None = 레이블 없는 NM (빈 txt 생성)
     """
     try:
         import cv2
@@ -315,9 +315,9 @@ def balance_classes(
         content = lbl_file.read_text(encoding="utf-8").strip()
         classes = {int(l.split()[0]) for l in content.splitlines() if l.strip()}
         stem = lbl_file.stem
-        if 0 in classes:
+        if 1 in classes:        # 1 = fire
             fire_stems.append(stem)
-        elif 1 in classes:
+        elif 0 in classes:      # 0 = smoke
             smoke_stems.append(stem)
         else:
             nm_stems.append(stem)
@@ -490,10 +490,10 @@ def main() -> None:
             # 경로에 따라 클래스 추정
             vf_lower = str(vf).lower()
             if "fl" in vf_lower or "fire" in vf_lower or "화재" in vf_lower:
-                label_class: int | None = 0
+                label_class: int | None = 1        # 1 = fire
                 cls_name = "fire"
             elif "sm" in vf_lower or "smoke" in vf_lower or "연기" in vf_lower:
-                label_class = 1
+                label_class = 0                     # 0 = smoke
                 cls_name = "smoke"
             else:
                 label_class = None  # NM
