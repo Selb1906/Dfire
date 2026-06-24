@@ -79,7 +79,7 @@ def plot_composition(by_name: dict) -> Path:
     ax.grid(axis="y", linestyle=":", alpha=0.5, zorder=0)
     ax.legend(loc="upper left", fontsize=9)
     fig.tight_layout()
-    out = OUT_DIR / "fig_dfire_composition.png"
+    out = OUT_DIR / "fig_data_composition_dfire.png"
     fig.savefig(out, dpi=300); plt.close(fig)
     return out
 
@@ -107,7 +107,7 @@ def plot_model(by_name: dict) -> Path:
                  fontsize=12, fontweight="bold")
     ax.grid(axis="y", linestyle=":", alpha=0.5, zorder=0)
     fig.tight_layout()
-    out = OUT_DIR / "fig_dfire_model.png"
+    out = OUT_DIR / "fig_model_dfire.png"
     fig.savefig(out, dpi=300); plt.close(fig)
     return out
 
