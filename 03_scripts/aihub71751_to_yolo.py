@@ -189,6 +189,36 @@ def balance(buckets, nm_ratio, rng):
     return fire + smoke + both + nm
 
 
+def _strip_smoke(items):
+    """fire 포함 이미지에서 smoke(0) 라벨 제거 → fire(1)만 남김. fire 없으면 제외."""
+    out = []
+    for img, lines, stem in items:
+        fl = [l for l in lines if l.split()[0] == "1"]
+        if fl:
+            out.append((img, fl, stem))
+    return out
+
+
+def compose(mode, buckets, nm_ratio, rng):
+    """train 구성. mode: c4(균형+NM) | c1(fire-only) | c2(불균형 14:1).
+    fire 포함(fire_only+both)은 세 모드 공통(smoke 제거 시 동일) → fire 내용 고정."""
+    fire = buckets.get("fire", [])     # fire-only
+    smoke = buckets.get("smoke", [])   # smoke-only
+    both = buckets.get("both", [])
+    if mode == "c4":
+        return balance(buckets, nm_ratio, rng)
+    fc = _strip_smoke(fire + both)     # fire 포함, smoke 라벨 제거
+    if mode == "c1":
+        logger.info(f"[compose c1] fire-only {len(fc)}장 (smoke 미학습)")
+        return fc
+    if mode == "c2":
+        k = max(1, round(len(fc) / 14))
+        sm = list(smoke); rng.shuffle(sm); sm = sm[:k]
+        logger.info(f"[compose c2] fire포함={len(fc)} smoke={len(sm)} → 14:1")
+        return fc + sm
+    raise ValueError(f"unknown mode: {mode}")
+
+
 def main():
     ap = argparse.ArgumentParser(description="AIHub 071751 → YOLO (per-image JSON)")
     ap.add_argument("--src_root", default=r"D:\AIHub_Fire\extracted",
@@ -196,16 +226,24 @@ def main():
     ap.add_argument("--dst", default=r"D:\AIHub_Fire\yolo_071751")
     ap.add_argument("--frame_step", type=int, default=10,
                     help="clip 내 N프레임당 1장 (1.9M→축소)")
-    ap.add_argument("--balance", action="store_true", help="FL:SM:NM 균형")
+    ap.add_argument("--balance", action="store_true", help="FL:SM:NM 균형(mode=c4)")
+    ap.add_argument("--mode", choices=["c1", "c2", "c4"], default="c4",
+                    help="구성: c1(fire-only) c2(14:1) c4(균형+NM)")
     ap.add_argument("--nm_ratio", type=float, default=0.5)
+    ap.add_argument("--val_link", default="",
+                    help="val 이미지 폴더 경로(설정 시 val 생성 건너뛰고 yaml에서 참조 — C1/C2 공유 val용)")
     ap.add_argument("--seed", type=int, default=42)
     args = ap.parse_args()
 
     rng = random.Random(args.seed)
     src = Path(args.src_root); dst = Path(args.dst)
 
-    for split, lab, srcd in [("train", "Training_labels", "Training_source"),
-                             ("val", "Validation_labels", "Validation_source")]:
+    splits = [("train", "Training_labels", "Training_source")]
+    # val_link 가 있으면 val 생성 생략(공유 val 참조). 없으면 자연분포 val 생성.
+    if not args.val_link:
+        splits.append(("val", "Validation_labels", "Validation_source"))
+
+    for split, lab, srcd in splits:
         labels_root = src / lab
         source_root = src / srcd
         if not labels_root.exists():
@@ -213,20 +251,22 @@ def main():
             continue
         img_out, lbl_out, buckets = convert_split(
             labels_root, source_root, dst, split, args.frame_step, rng)
-        # 균형은 train 에만 (val 은 자연분포 유지 — 평가 정합성, DFire val/test 원본 유지와 동일 원칙)
-        if args.balance and split == "train":
-            items = balance(buckets, args.nm_ratio, rng)
+        if split == "train":
+            # mode 우선; --balance 는 mode=c4 의 별칭(하위호환)
+            mode = "c4" if (args.balance and args.mode == "c4") else args.mode
+            items = compose(mode, buckets, args.nm_ratio, rng)
         else:
-            items = [x for v in buckets.values() for x in v]
+            items = [x for v in buckets.values() for x in v]  # val 자연분포
         logger.info(f"[{split}] 최종 {len(items)}장 기록 중...")
         write_items(items, img_out, lbl_out)
 
-    yaml = (f"# AIHub 071751 → YOLO (0=smoke, 1=fire)\n"
+    val_path = Path(args.val_link).as_posix() if args.val_link else "images/val"
+    yaml = (f"# AIHub 071751 → YOLO (0=smoke, 1=fire), mode={args.mode}\n"
             f"path: {dst.as_posix()}\n"
-            f"train: images/train\nval: images/val\n\n"
+            f"train: images/train\nval: {val_path}\n\n"
             f"nc: 2\nnames: {CLASS_NAMES}\n")
     (dst / "data.yaml").write_text(yaml, encoding="utf-8")
-    logger.info(f"[done] data.yaml → {dst / 'data.yaml'}")
+    logger.info(f"[done] data.yaml → {dst / 'data.yaml'} (mode={args.mode}, val={val_path})")
 
 
 if __name__ == "__main__":
