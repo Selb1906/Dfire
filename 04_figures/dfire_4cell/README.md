@@ -16,6 +16,7 @@
 - `fig_data_composition_dfire.png` — 데이터 구성 단계별 test mAP@0.5 + smoke AP 추이 (11n 고정, C1~C4), 300dpi
 - `fig_model_dfire.png` — 모델 용량 mAP@0.5 (C4: 11n vs 11s), 300dpi
 - `C{1..4}_test_confusion_matrix_norm.png` — 셀별 정규화 혼동행렬 (test)
+- `fig_confusion_matrix_comp_dfire.png` — C1~C4 정규화 혼동행렬 **2×2 그리드** (그림 3, 300dpi, `make_confusion_grid.py`)
 - `C4_test_PR_curve.png` — C4 PR 곡선 (fire/smoke 클래스별)
 - 생성: `03_scripts/plot_dfire_ablation.py` (수치 기반, GPU 불요)
 
