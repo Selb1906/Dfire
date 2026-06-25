@@ -161,18 +161,33 @@ def main():
     c4_items = c3_items + b["background"]
     build_train("c4_balanced_nm", c4_items, keep_classes=None)
 
+    # ── Option B: 데이터량 통제 (NM vs 신호, 동일 총량) — 리뷰어 ①번 방어
+    #   C3_vol = 전체 신호(NM 0) = both + fire_only + 전체 smoke_only
+    #   C4_eq  = C3 + NM(C3_vol과 같은 총량이 되도록) → 같은 총량에서 NM vs 신호 순수 대결
+    print("[5] C3_vol / C4_eq (Option B, 동일 총량) 빌드...")
+    c3_vol_items = b["both"] + b["fire_only"] + b["smoke_only"]   # NM 0, 최대 신호
+    build_train("c3_vol", c3_vol_items, keep_classes=None)
+    nm_eq = even_sample(b["background"], len(c3_vol_items) - len(c3_items))
+    c4_eq_items = c3_items + nm_eq                                # C3 + NM(=추가신호와 동수)
+    build_train("c4_eq", c4_eq_items, keep_classes=None)
+    print(f"    C3_vol={len(c3_vol_items)}(NM 0)  C4_eq={len(c4_eq_items)}(NM {len(nm_eq)})  "
+          f"동일총량={len(c3_vol_items) == len(c4_eq_items)}")
+
     # ── yaml 작성 (c4_yolo11s 는 c4 와 동일 데이터)
-    print("[5] yaml 작성...")
+    print("[6] yaml 작성...")
     write_yaml("c1_fire_only", "c1_fire_only")
     write_yaml("c2_imbalanced", "c2_imbalanced")
     write_yaml("c3_balanced", "c3_balanced")
     write_yaml("c4_balanced_nm", "c4_balanced_nm")
     write_yaml("c4_yolo11s", "c4_balanced_nm")  # 동일 데이터, 모델만 다름
+    write_yaml("c3_vol", "c3_vol")
+    write_yaml("c4_eq", "c4_eq")
 
     print("\n완료. 구성 요약:")
     print(f"  C1: {len(c1_items)}장 (smoke 미학습)")
     print(f"  C3: {len(c3_items)}장 (fire:smoke 이미지 1:1)")
     print(f"  C4: {len(c4_items)}장 (C3 + NM {n_bg})")
+    print(f"  C3_vol: {len(c3_vol_items)}장 (NM 0) / C4_eq: {len(c4_eq_items)}장 (NM {len(nm_eq)}) — 동일 총량")
 
 
 if __name__ == "__main__":
