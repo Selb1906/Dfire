@@ -421,6 +421,27 @@ C4(11n)→C4_11s  0.736 → 0.749  (+1.3%p)  모델 확대 11n→11s
 
 ---
 
+## E07 — Jetson Orin Nano TRT FP16 벤치마크 (2026-06-25, §5.4 FPS)
+
+> 목적: §5.4 "정확도 vs 엣지 처리량" 트레이드오프를 **실측 FPS**로 완성.
+> 파이프라인: best.pt → **ONNX(Windows CPU export)** → Jetson 전송 → **trtexec FP16 엔진 빌드+벤치**(torch/ultralytics 불요).
+> 환경: Jetson Orin Nano, TensorRT v10.3, FP16, `jetson_clocks`(최대 클럭) 적용.
+
+### 결과 (TRT FP16 raw inference)
+| 입력 | Throughput | GPU compute (mean) | Latency (mean) | (참고) DFire test mAP@0.5 |
+|:---:|:---:|:---:|:---:|:---:|
+| **640** | **234.8 qps (~235 FPS)** | 4.25 ms | 4.60 ms | 0.736 (R8 C4) |
+| **416** | **375.2 qps (~375 FPS)** | 2.66 ms | 2.79 ms | 0.700 (E08) |
+
+### 판정 / 주의
+- **@416이 ~1.6배 빠름(375 vs 235 FPS)** ↔ 정확도 **−3.6%p**. §5.4 트레이드오프 실측 완성.
+- ⚠️ **이 수치는 "순수 엔진 추론" throughput**(trtexec) — 전처리·NMS·후처리·이미지 디코드 **제외**. 실제 end-to-end 파이프라인 FPS는 이보다 낮음. 원고엔 **"TRT FP16 raw inference"**로 명시할 것.
+- ⚠️ 원고 기존 "~47 FPS"(handoff 추정치)와 **다른 지표**(그건 end-to-end/추정). 혼동 금지 — 본 측정은 raw engine throughput.
+- 측정 변동: GPU compute CoV ~8~9% (jetson_clocks 후에도 잔변동). 안정화엔 `--useSpinwait` 추가 가능.
+- 산출물: `best_C4_640.engine` / `best_C4_416.engine`(Jetson 로컬), ONNX는 `runs/E_C4|E08_C4_416/weights/best.onnx`.
+
+---
+
 ## 모델 선정 기준
 
 | 용도 | 기준 | 현재 후보 | 비고 |
@@ -496,4 +517,4 @@ C4(11n)→C4_11s  0.736 → 0.749  (+1.3%p)  모델 확대 11n→11s
 | AIHub 71472 합성 3D 데이터 | +0~1%p (미검증) | P2 |
 | 현장 파인튜닝 (설치 후 배경 수집) | +1~3%p (도메인 갭 최소화) | P0 — 배포 후 필수 |
 
-*마지막 업데이트: 2026-06-25 (E09/E10 — 데이터량 통제: NM이 동일분량 신호보다 +1.4%p 우월, 리뷰어①방어)*
+*마지막 업데이트: 2026-06-25 (E07 — Jetson TRT FP16: 640 ~235 FPS / 416 ~375 FPS, §5.4 FPS 실측)*
