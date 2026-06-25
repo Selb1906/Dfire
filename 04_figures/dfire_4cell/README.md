@@ -17,8 +17,10 @@
 - `fig_model_dfire.png` — 모델 용량 mAP@0.5 (C4: 11n vs 11s, +1.3%p), 300dpi
 - `fig_smoke_ap_trend_dfire.png` — 구성별 test smoke AP 막대 (0.000/0.237/0.698/0.765), 300dpi
 - `C{1..4}_test_confusion_matrix_norm.png` — 셀별 정규화 혼동행렬 (test)
-- `fig_confusion_matrix_comp_dfire.png` — C1~C4 정규화 혼동행렬 **2×2 그리드** (그림 3, 300dpi, `make_confusion_grid.py`)
+- `fig_confusion_matrix_comp_dfire.png` — C1~C4 정규화 혼동행렬 **2×2 그리드** (단일 컬러바, 데이터 재계산, `make_confusion_grid.py`)
 - `C4_test_PR_curve.png` — C4 PR 곡선 (fire/smoke 클래스별)
+- `fig_qualitative_success.png` — C4 정성 성공례 (화염 0.83 + 연기 0.84), `make_qualitative.py`
+- `fig_qualitative_failure.png` — C4 정성 한계례 (정상배경 오탐 + 원거리 화염 미탐)
 - 생성: `03_scripts/plot_dfire_ablation.py` (수치 기반, GPU 불요)
 
 ## 파일
