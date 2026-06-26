@@ -13,9 +13,9 @@
 | C4_11s | YOLO11s | C4 동일 데이터, 모델만 변경 |
 
 ## 논문용 그림 (publication — 영문 전용, 제목 없음)
-- `fig_data_composition_dfire.png` — 데이터 구성 단계별 test mAP@0.5 + smoke AP 추이 (11n, C1~C4), 300dpi
-- `fig_model_dfire.png` — 모델 용량 mAP@0.5 (C4: 11n vs 11s, +1.3%p), 300dpi
-- `fig_smoke_ap_trend_dfire.png` — 구성별 test smoke AP 막대 (0.000/0.237/0.698/0.765), 300dpi
+- `fig_data_composition_dfire.png` — 데이터 구성별 test mAP@0.5 + smoke AP. **C3/C4는 멀티시드 n=3 평균±std 오차막대**(C3 0.685±0.005, C4 0.740±0.004), C1/C2는 단일시드. 화살표 +36.0%p/+5.5%p. 300dpi
+- `fig_model_dfire.png` — 모델 용량 mAP@0.5 (**n=3 평균±std**: 11n 0.740±0.004, 11s 0.751±0.002, +1.1%p), 오차막대. 300dpi
+- `fig_smoke_ap_trend_dfire.png` — 구성별 test smoke AP 막대 (단일시드 0.000/0.237/0.698/0.765 — 멀티시드 smoke AP 미집계), 300dpi
 - `C{1..4}_test_confusion_matrix_norm.png` — 셀별 정규화 혼동행렬 (test)
 - `fig_confusion_matrix_comp_dfire.png` — C1~C4 정규화 혼동행렬 **2×2 그리드** (단일 컬러바, 데이터 재계산, `make_confusion_grid.py`)
 - `C4_test_PR_curve.png` — C4 PR 곡선 (fire/smoke 클래스별)
