@@ -1,0 +1,9 @@
+# D_full — 최종/배포 모델 (전체 DFire train 14,122, 다운샘플 없음).
+# ★ ablation C1~C4와 완전 별개. C4는 균형 위해 fire를 3,828로 다운샘플한 통제 실험,
+#   D_full은 그 통제를 깨고 전체 데이터를 쓰는 별개 "최종 성능" 모델.
+train: C:/YangHyunHo/DFire/dfire/data/train/images
+val: C:/YangHyunHo/DFire/dfire/data/val/images
+test: C:/YangHyunHo/DFire/dfire/data/test/images
+
+names: ['smoke', 'fire']
+nc: 2
