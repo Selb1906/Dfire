@@ -1,0 +1,8 @@
+# Design A — D-Fire ×3(42366) + AIHub 실내(14122) = 56488
+# naive와 동일 구조, AIHub inout만 in. val/test=D-Fire. 0=smoke,1=fire.
+train: C:/YangHyunHo/DFire/compositions/combined_in_train.txt
+val: C:/YangHyunHo/DFire/dfire/data/val/images
+test: C:/YangHyunHo/DFire/dfire/data/test/images
+
+names: ['smoke', 'fire']
+nc: 2
