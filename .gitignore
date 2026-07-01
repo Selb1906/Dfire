@@ -26,3 +26,6 @@ __pycache__/
 .ipynb_checkpoints/
 .venv/
 venv/
+
+# dedup test (하드링크, 재현: build_dedup_test.py)
+/dfire_test_dedup/

@@ -1,0 +1,8 @@
+# DFire dedup — train 근접중복(dHash ≤5) 제외한 test. val은 원본.
+# 누수 검증용. 원본 test=4306, 제외=2208, 유지=2098
+train: C:/YangHyunHo/DFire/dfire/data/train/images
+val: C:/YangHyunHo/DFire/dfire/data/val/images
+test: C:/YangHyunHo/DFire/dfire_test_dedup/images
+
+names: ['smoke', 'fire']
+nc: 2
