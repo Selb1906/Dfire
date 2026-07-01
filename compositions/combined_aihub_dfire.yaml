@@ -1,0 +1,10 @@
+# 요청 A-2 — AIHub 071751 train + DFire full train 결합 → DFire test 평가
+# 클래스 0=smoke, 1=fire (양쪽 통일). ultralytics 다중 train 소스 지원.
+train:
+  - D:/AIHub_Fire/yolo_071751/images/train
+  - C:/YangHyunHo/DFire/dfire/data/train/images
+val: C:/YangHyunHo/DFire/dfire/data/val/images
+test: C:/YangHyunHo/DFire/dfire/data/test/images
+
+names: ['smoke', 'fire']
+nc: 2
