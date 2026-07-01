@@ -29,3 +29,6 @@ venv/
 
 # dedup test (하드링크, 재현: build_dedup_test.py)
 /dfire_test_dedup/
+
+# 결합 오버샘플 train 리스트(56K줄, 재현: build_combined_os.py)
+compositions/combined_os_train.txt

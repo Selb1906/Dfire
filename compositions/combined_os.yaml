@@ -1,0 +1,8 @@
+# 결합 오버샘플 — D-Fire ×3(42366) + AIHub 샘플(14122) = 56488 (D-Fire 75%)
+# val/test = D-Fire 원본. 클래스 0=smoke,1=fire (양쪽 통일).
+train: C:/YangHyunHo/DFire/compositions/combined_os_train.txt
+val: C:/YangHyunHo/DFire/dfire/data/val/images
+test: C:/YangHyunHo/DFire/dfire/data/test/images
+
+names: ['smoke', 'fire']
+nc: 2
