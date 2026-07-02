@@ -34,3 +34,4 @@ venv/
 compositions/combined_os_train.txt
 compositions/combined_out_train.txt
 compositions/combined_in_train.txt
+compositions/aihub14k_train.txt
