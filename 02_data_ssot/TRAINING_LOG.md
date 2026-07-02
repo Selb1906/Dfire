@@ -560,6 +560,24 @@ C4(11n)→C4_11s  0.736 → 0.749  (+1.3%p)  모델 확대 11n→11s
 - 산출물: `runs/Combined_{out,in,naive}_11s/weights/best.pt`, 집계 `runs/inout_summary.json`, 구성 `build_inout_subsets.py`.
 
 ---
+## 전이학습 T1 — pretrain(AIHub)→finetune(DFire) vs 혼합 vs 타깃단독 (2026-07-02, 통합전략 통제)
+
+> 데이터 고정(D-Fire 14,122 + AIHub-mixed 14,122 = Combined_naive와 동일), **통합 '전략'만 변경**.
+> Stage1 AIHub 14K 사전학습 → Stage2 D-Fire 미세조정. 하이퍼파라미터·모델(11s) 동일, 초기화만 상이.
+
+### 결과 (DFire test 4,306, mAP@0.5)
+| 전략 | 구성 | mAP@0.5 | mAP@0.5:0.95 | P | R | fire AP | smoke AP |
+|------|------|:---:|:---:|:---:|:---:|:---:|:---:|
+| **전이(T1)** | AIHub 사전학습→DFire 미세조정 | **0.779** | 0.457 | 0.788 | 0.720 | 0.721 | 0.837 |
+| 혼합(Combined_naive) | DFire×3+AIHub 동시학습 | 0.776 | — | — | — | — | — |
+| (참고) 타깃단독 D_full 11s | DFire 전체만 | 0.787 | 0.458 | 0.783 | 0.719 | 0.729 | 0.845 |
+
+### 판정
+- **전이조차 D_full(0.787) 아래**(0.779, -0.8%p) — 사전학습→미세조정으로도 도메인 불일치 데이터는 순수 D-Fire를 못 넘음. **"대상 도메인 데이터가 지배적"** 주장 결정적 강화.
+- 전이 ≈ 혼합(0.779 vs 0.776) — **동일 데이터라면 통합 전략(전이 vs 혼합)은 큰 차이 없음**.
+- 산출물: `runs/Transfer_pretrain_aihub14k`, `runs/Transfer_finetune_dfire/weights/best.pt`, `runs/transfer_summary.json`.
+
+---
 ## 모델 선정 기준
 
 | 용도 | 기준 | 현재 후보 | 비고 |
@@ -635,4 +653,4 @@ C4(11n)→C4_11s  0.736 → 0.749  (+1.3%p)  모델 확대 11n→11s
 | AIHub 71472 합성 3D 데이터 | +0~1%p (미검증) | P2 |
 | 현장 파인튜닝 (설치 후 배경 수집) | +1~3%p (도메인 갭 최소화) | P0 — 배포 후 필수 |
 
-*마지막 업데이트: 2026-07-02 (Design A 실내/실외 결합 통제실험 기록 — 도메인 갭 원인 규명)*
+*마지막 업데이트: 2026-07-02 (Phase2: 도메인 매트릭스 X + 전이학습 T1 기록)*

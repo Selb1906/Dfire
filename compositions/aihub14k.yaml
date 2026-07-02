@@ -1,0 +1,7 @@
+# 전이학습(T1) 사전학습 소스 — 순수 AIHub 14,122 (Combined_naive와 동일 서브셋, 통제 비교용).
+# val = AIHub val 19,080. 클래스 0=smoke,1=fire (D-Fire와 통일).
+train: C:/YangHyunHo/DFire/compositions/aihub14k_train.txt
+val: D:/AIHub_Fire/yolo_071751/images/val
+
+names: ['smoke', 'fire']
+nc: 2

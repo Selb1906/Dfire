@@ -1,0 +1,6 @@
+# 크로스평가(X) — D-Fire 학습 모델을 AIHub val 19,080으로 평가(도메인 매트릭스 반대 방향).
+# 클래스 0=smoke,1=fire (양쪽 통일).
+val: D:/AIHub_Fire/yolo_071751/images/val
+
+names: ['smoke', 'fire']
+nc: 2
