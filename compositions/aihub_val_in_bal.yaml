@@ -1,0 +1,6 @@
+# AIHub val in 클래스통제(1:1:1, 1836×3=5508) — C4 재평가. 0=smoke,1=fire.
+train: C:/YangHyunHo/DFire/compositions/aihub_val_in_bal_list.txt
+val: C:/YangHyunHo/DFire/compositions/aihub_val_in_bal_list.txt
+
+names: ['smoke', 'fire']
+nc: 2

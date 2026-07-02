@@ -37,3 +37,5 @@ compositions/combined_in_train.txt
 compositions/aihub14k_train.txt
 compositions/aihub_val_in_list.txt
 compositions/aihub_val_out_list.txt
+compositions/aihub_val_in_bal_list.txt
+compositions/aihub_val_out_bal_list.txt
