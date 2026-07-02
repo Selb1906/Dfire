@@ -91,9 +91,9 @@ def transfer_section(ts, naive):
 def main():
     txt = LOG.read_text(encoding="utf-8")
     ins = ""
-    if DM.exists() and "도메인 매트릭스 X" not in txt:
+    if DM.exists() and "## 도메인 매트릭스 X" not in txt:
         ins += matrix_section(json.loads(DM.read_text(encoding="utf-8")))
-    if TS.exists() and "전이학습 T1" not in txt:
+    if TS.exists() and "## 전이학습 T1" not in txt:
         naive = None
         if IO.exists():
             for r in json.loads(IO.read_text(encoding="utf-8")):

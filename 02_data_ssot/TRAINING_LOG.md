@@ -578,6 +578,22 @@ C4(11n)→C4_11s  0.736 → 0.749  (+1.3%p)  모델 확대 11n→11s
 - 산출물: `runs/Transfer_pretrain_aihub14k`, `runs/Transfer_finetune_dfire/weights/best.pt`, `runs/transfer_summary.json`.
 
 ---
+## 도메인 매트릭스 X — 양방향 크로스평가 (2026-07-02, 갭 특성화)
+
+> A-1(AIHub학습→DFire test)의 **반대 방향**(DFire학습 D_full→AIHub val)을 추가해 2×2 완성. 재학습 없음.
+
+### mAP@0.5 (행=학습 도메인, 열=평가 도메인)
+| 학습 \ 평가 | DFire test | AIHub val |
+|------|:---:|:---:|
+| **D-Fire**(D_full 11m) | **0.789** | 0.4001 |
+| **AIHub**(C4 11n) | 0.262 | 0.913 |
+
+### 판정
+- **DFire→AIHub도 급락**(0.789→0.400, −38.9%p) — A-1(AIHub→DFire 0.913→0.262)과 함께 **양방향 도메인 갭** 확정. 어느 쪽으로도 전이 안 됨.
+- 각 도메인은 자기 test에서만 강함(대각선 우세) → "성능은 대상 도메인 데이터에 종속"이라는 핵심 주장을 매트릭스로 시각화.
+- 산출물: `runs/domain_matrix.json`, `runs/Dfull_11*_on_AIHubval/`.
+
+---
 ## 모델 선정 기준
 
 | 용도 | 기준 | 현재 후보 | 비고 |
