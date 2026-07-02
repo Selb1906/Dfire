@@ -35,3 +35,5 @@ compositions/combined_os_train.txt
 compositions/combined_out_train.txt
 compositions/combined_in_train.txt
 compositions/aihub14k_train.txt
+compositions/aihub_val_in_list.txt
+compositions/aihub_val_out_list.txt
