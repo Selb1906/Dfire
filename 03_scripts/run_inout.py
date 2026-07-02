@@ -34,7 +34,8 @@ def run_cell(name, yaml):
     data = str(BASE / "compositions" / yaml)
     best = Path(PROJECT) / name / "weights" / "best.pt"
     t0 = time.time()
-    if not best.exists():
+    # 완료 판정: best.pt 존재 + optimizer 제거된(stripped) 크기(<40MB). 부분(미완, ~72MB)은 재학습.
+    if not (best.exists() and best.stat().st_size < 40 * 1024 * 1024):
         YOLO("yolo11s.pt").train(
             data=data, epochs=EPOCHS, imgsz=IMGSZ, batch=BATCH, device=DEVICE,
             project=PROJECT, name=name, exist_ok=True, save_period=10,
@@ -53,6 +54,12 @@ def run_cell(name, yaml):
 def main():
     out = Path(PROJECT) / "inout_summary.json"
     results = json.loads(out.read_text(encoding="utf-8")) if out.exists() else []
+    # 자가치유: best.pt 없거나 부분(>40MB, optimizer 포함)인 셀 기록 제거 → 재학습 대상
+    def _complete(r):
+        b = Path(r["best_pt"])
+        return b.exists() and b.stat().st_size < 40 * 1024 * 1024
+    results = [r for r in results if _complete(r)]
+    out.write_text(json.dumps(results, indent=2, ensure_ascii=False))
     done = {r["name"] for r in results}
     for name, yaml in CELLS:
         if name in done:
