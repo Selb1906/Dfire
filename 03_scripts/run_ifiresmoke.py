@@ -10,6 +10,7 @@ from pathlib import Path
 
 os.environ.setdefault("WANDB_MODE", "offline")
 os.environ.setdefault("WANDB_DISABLED", "true")
+os.environ.setdefault("FOR_DISABLE_CONSOLE_CTRL_HANDLER", "1")  # window-CLOSE forrtl abort 방지
 
 BASE = Path(r"C:\YangHyunHo\DFire")
 PROJECT = str(BASE / "runs")

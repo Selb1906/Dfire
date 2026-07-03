@@ -10,6 +10,7 @@ from pathlib import Path
 
 os.environ.setdefault("WANDB_MODE", "offline")
 os.environ.setdefault("WANDB_DISABLED", "true")
+os.environ.setdefault("FOR_DISABLE_CONSOLE_CTRL_HANDLER", "1")  # window-CLOSE forrtl abort 방지
 
 BASE = Path(r"C:\YangHyunHo\DFire")
 PROJECT = str(BASE / "runs")
@@ -46,10 +47,15 @@ def main():
     results = json.loads(out.read_text(encoding="utf-8")) if out.exists() else {}
     for seed, name in SEEDS:
         best = Path(PROJECT) / name / "weights" / "best.pt"
+        last = Path(PROJECT) / name / "weights" / "last.pt"
         t0 = time.time()
         if not done(name):
-            print(f"[seed {seed}] 학습 시작 ({name})", flush=True)
-            YOLO("yolo11n.pt").train(data=DATA, name=name, seed=seed, **HP)
+            if last.exists():   # 중단분 이어서(resume) — window-CLOSE 등으로 죽어도 last.pt에서 계속
+                print(f"[seed {seed}] 이어서 학습(resume) ({name})", flush=True)
+                YOLO(str(last)).train(resume=True)
+            else:
+                print(f"[seed {seed}] 학습 시작 ({name})", flush=True)
+                YOLO("yolo11n.pt").train(data=DATA, name=name, seed=seed, **HP)
         elapsed = round(time.time() - t0, 1)
         model = YOLO(str(best))
         ev = {}
