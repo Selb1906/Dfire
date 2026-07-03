@@ -85,9 +85,12 @@ def main():
         print("[기록] TRAINING_LOG.md에 AIHub 4셀 섹션 추가.", flush=True)
     else:
         print("[스킵] 이미 존재.", flush=True)
+    # §5.1 헤드라인 그림(C1→C4) 자동 생성
+    sh(sys.executable, "03_scripts/plot_aihub_composition_headline.py")
     sh("git", "pull", "--rebase", "origin", "yhh")
     sh("git", "add", "02_data_ssot/TRAINING_LOG.md", "03_scripts/run_aihub_c3.py",
-       "03_scripts/finalize_c3.py", "03_scripts/run_c3.bat", "compositions/aihub_c3.yaml")
+       "03_scripts/finalize_c3.py", "03_scripts/run_c3.bat", "compositions/aihub_c3.yaml",
+       "03_scripts/plot_aihub_composition_headline.py", "04_figures/fig_aihub_composition_headline.png")
     if sh("git", "commit", "-m", "AIHub 4셀 완성 — C3(균형·NM없음) 추가 + NM/균형 효과 분해") == 0:
         sh("git", "push", "origin", "yhh")
     # IFireSmoke 체이닝 — GPU 유휴 상태에서 이어서 실행
