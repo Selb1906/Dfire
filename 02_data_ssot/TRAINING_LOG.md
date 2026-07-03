@@ -699,6 +699,27 @@ C4(11n)→C4_11s  0.736 → 0.749  (+1.3%p)  모델 확대 11n→11s
 - 산출물: `runs/AIHub_C3/weights/best.pt`, `runs/aihub_c3_summary.json`, `run_aihub_c3.py`.
 
 ---
+## IFireSmoke 네이티브 직접 벤치 — §5.9 '인용→직접비교' (2026-07-03)
+
+> Sozol et al.(PLOS ONE PONE-D-24-47312) 공개 IFireSmoke(HF `shahriar-5/IFireSmoke`, 5,000장)에 우리 파이프라인 직접 적용.
+> ⚠️ **이 데이터셋은 이미 FL:SM≈1:1 균형 + NM 0장** → 우리 '구성방법(균형+NM)'은 적용 불가/무의미.
+>   따라서 '같은 데이터 위 우리 모델(YOLO11n)' **직접비교**로 수행(그들 Enhanced-YOLOv5 보고치 대비).
+> train 4000(native) → **test 500** 평가. 클래스 0=Fire, 1=Smoke(원본 순서 유지).
+
+### 결과 (IFireSmoke test 500, mAP@0.5)
+| 모델 | mAP@0.5 | mAP@0.5:0.95 | fire AP | smoke AP | P | R |
+|------|:---:|:---:|:---:|:---:|:---:|:---:|
+| **우리 YOLO11n (native)** | **0.928** | 0.703 | 0.862 | 0.995 | 0.968 | 0.922 |
+| (참고) 그들 Enhanced-YOLOv5 | `[보고치: 논문 인용 — 논문세션 확인]` | — | — | — | — | — |
+| (참고) 우리 valid 500 | 0.936 | 0.679 | 0.919 | 0.954 | — | — |
+
+### 메모
+- 우리 YOLO11n이 IFireSmoke test에서 **mAP@0.5 0.928** 달성 → §5.9를 '인용'에서 '같은 데이터 직접 적용'으로 강화.
+- **한계 명시**: 이 데이터는 NM 0장·이미 균형이라 우리 핵심 기여(NM 비화재보 저감)를 실증하는 셋이 아님. NM 효과 실증은 별도 외부 NM 주입 실험 필요(후속 옵션).
+- 그들 보고치는 논문세션이 원문에서 인용 확정(분석세션 범위 밖).
+- 산출물: `runs/IFireSmoke_11n/weights/best.pt`, `runs/ifiresmoke_summary.json`, `run_ifiresmoke.py`.
+
+---
 ## 모델 선정 기준
 
 | 용도 | 기준 | 현재 후보 | 비고 |
