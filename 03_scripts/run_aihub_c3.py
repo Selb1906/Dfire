@@ -85,8 +85,17 @@ def main():
     elapsed = round(time.time() - t0, 1)
     vr = YOLO(str(best)).val(data=data, imgsz=IMGSZ, device=DEVICE, split="val",
                              project=PROJECT, name=f"{NAME}_val", exist_ok=True, plots=True, verbose=False)
+    # C1/C2/C4 sanity 재평가 — 동일 코드·동일 공유 val로 4셀 전부 재평가(R9 일치 확인)
+    sanity = {}
+    for k, rel in [("C1", "AIHub_C1"), ("C2", "AIHub_C2"), ("C4", "AIHub_C4")]:
+        bp = Path(PROJECT) / rel / "weights" / "best.pt"
+        if bp.exists():
+            rr = YOLO(str(bp)).val(data=data, imgsz=IMGSZ, device=DEVICE, split="val",
+                                   project=PROJECT, name=f"{rel}_sanityval", exist_ok=True, plots=False, verbose=False)
+            sanity[k] = metrics(rr)
+            print(f"  [sanity {k}] val mAP50={sanity[k]['map50']}")
     out = {"name": NAME, "train_imgs": n, "val_imgs": 19080, "elapsed_sec": elapsed,
-           "best_pt": str(best), "val": metrics(vr)}
+           "best_pt": str(best), "val": metrics(vr), "sanity_reeval": sanity}
     (Path(PROJECT) / "aihub_c3_summary.json").write_text(
         json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
     v = out["val"]

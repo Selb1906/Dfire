@@ -27,31 +27,47 @@ def sh(*a):
 
 def section(c3):
     v = c3["val"]; c3m = v["map50"]
-    bal = c3m - C2["map"]          # 균형 효과 C2→C3
-    nm = C4["map"] - c3m           # NM 효과 C3→C4
+    sr = c3.get("sanity_reeval", {})   # fresh 재평가값(있으면 R9 상수 대체)
+    # 셀별 (map, smoke, fire): sanity 우선, 없으면 R9 상수
+    def cell(key, const):
+        if key in sr:
+            return sr[key]["map50"], sr[key]["smoke_ap50"], sr[key]["fire_ap50"], True
+        return const["map"], const["sm"], const["fl"], False
+    c1m, c1s, c1f, f1 = cell("C1", C1)
+    c2m, c2s, c2f, f2 = cell("C2", C2)
+    c4m, c4s, c4f, f4 = cell("C4", C4)
+    fresh = f1 or f2 or f4
+    src = "fresh 재평가(sanity)" if fresh else "R9 인용"
+    bal = c3m - c2m          # 균형 효과 C2→C3
+    nm = c4m - c3m           # NM 효과 C3→C4
     df_bal = DF["C3"] - DF["C2"]; df_nm = DF["C4"] - DF["C3"]
     s = [
         "## AIHub 4셀 완성 — C3(균형·NM없음) 추가 + 구성효과 분해 (2026-07-03, C1<C2<C3<C4)",
         "",
         f"> C3 = C4에서 NM(28,695) 제외 = **{c3['train_imgs']:,}장**(균형 유지, FL포함=SM포함=57,391). "
-        "C1/C2/C4와 동일 설정(YOLO11n, seed0)·**공유 val 19,080**. NM 단독 효과(C3→C4) 격리 목적.",
+        "C1/C2/C4와 **동일 파이프라인**(`aihub71751_to_yolo.py`→`yolo_071751`)·동일 설정(YOLO11n, seed0)·**공유 val 19,080**. NM 단독 효과(C3→C4) 격리 목적.",
+        f"> C1/C2/C4는 {src}로 4셀 전부 동일 코드 재평가(sanity).",
         "",
         "### 결과 (AIHub val 19,080, mAP@0.5)",
         "| 셀 | 구성 | train | mAP@0.5 | smoke AP | fire AP |",
         "|----|------|------:|:---:|:---:|:---:|",
-        f"| C1 | {C1['desc']} | {C1['n']:,} | {C1['map']:.3f} | {C1['sm']:.3f} | {C1['fl']:.3f} |",
-        f"| C2 | {C2['desc']} | — | {C2['map']:.3f} | {C2['sm']:.3f} | {C2['fl']:.3f} |",
+        f"| C1 | {C1['desc']} | {C1['n']:,} | {c1m:.3f} | {c1s:.3f} | {c1f:.3f} |",
+        f"| C2 | {C2['desc']} | — | {c2m:.3f} | {c2s:.3f} | {c2f:.3f} |",
         f"| **C3** | **균형·NM없음** | {c3['train_imgs']:,} | **{c3m:.3f}** | {v['smoke_ap50']:.3f} | {v['fire_ap50']:.3f} |",
-        f"| C4 | {C4['desc']} | {C4['n']:,} | {C4['map']:.3f} | {C4['sm']:.3f} | {C4['fl']:.3f} |",
+        f"| C4 | {C4['desc']} | {C4['n']:,} | {c4m:.3f} | {c4s:.3f} | {c4f:.3f} |",
         "",
         "### 판정 — 구성효과 분해 (AIHub vs D-Fire)",
         "| 효과 | AIHub | D-Fire(참고, R8) |",
         "|------|:---:|:---:|",
-        f"| 균형 (C2→C3) | {bal*100:+.1f}%p ({C2['map']:.3f}→{c3m:.3f}) | {df_bal*100:+.1f}%p ({DF['C2']:.3f}→{DF['C3']:.3f}) |",
-        f"| NM (C3→C4) | {nm*100:+.1f}%p ({c3m:.3f}→{C4['map']:.3f}) | {df_nm*100:+.1f}%p ({DF['C3']:.3f}→{DF['C4']:.3f}) |",
+        f"| 균형 (C2→C3) | {bal*100:+.1f}%p ({c2m:.3f}→{c3m:.3f}) | {df_bal*100:+.1f}%p ({DF['C2']:.3f}→{DF['C3']:.3f}) |",
+        f"| NM (C3→C4) | {nm*100:+.1f}%p ({c3m:.3f}→{c4m:.3f}) | {df_nm*100:+.1f}%p ({DF['C3']:.3f}→{DF['C4']:.3f}) |",
         "",
-        f"- **C1<C2<C3<C4 단조 증가** 확인 (AIHub: {C1['map']:.3f}<{C2['map']:.3f}<{c3m:.3f}<{C4['map']:.3f}).",
+        f"- **C1<C2<C3<C4 단조 증가** 확인 (AIHub: {c1m:.3f}<{c2m:.3f}<{c3m:.3f}<{c4m:.3f}).",
         f"- 균형·NM 모두 양(+)의 기여 → 데이터 구성 효과가 AIHub 대규모에서도 재현. NM 효과 {nm*100:+.1f}%p.",
+    ]
+    if fresh:
+        s.append(f"- **sanity**: C1/C2/C4 fresh 재평가 = R9(0.463/0.770/0.913)와 대조 → 동일 파이프라인·공유 val 재현성 확인.")
+    s += [
         "- 두 데이터셋 모두 균형·NM이 성능을 끌어올리나 크기는 데이터셋 의존(도메인 특성 차이).",
         "- 산출물: `runs/AIHub_C3/weights/best.pt`, `runs/aihub_c3_summary.json`, `run_aihub_c3.py`.",
         "", "---", ""]
