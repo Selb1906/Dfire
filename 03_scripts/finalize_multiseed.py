@@ -81,6 +81,9 @@ def main():
        "03_scripts/finalize_multiseed.py", "03_scripts/run_multiseed.bat")
     if sh("git", "commit", "-m", "AIHub 멀티시드(n=3) 통계 검증 — 실내/실외 헤드라인 mean±std 확정") == 0:
         sh("git", "push", "origin", "yhh")
+    # C3(4셀 완성) 체이닝 — GPU 유휴 상태에서 이어서 실행
+    sh("schtasks", "/Run", "/TN", "DesignA_C3")
+    print("[체이닝] DesignA_C3 트리거.", flush=True)
     # 야간 재실행 방지: 완료 후 예약작업 자삭제
     sh("schtasks", "/Delete", "/TN", "DesignA_MSeed", "/F")
     print("[완료] 멀티시드 마무리 + 작업 정리.", flush=True)

@@ -1,0 +1,6 @@
+# AIHub C3(균형, NM 없음) — C4에서 NM 제외. val=공유 19,080. 0=smoke,1=fire.
+train: C:/YangHyunHo/DFire/compositions/aihub_c3_train.txt
+val: D:/AIHub_Fire/yolo_071751/images/val
+
+names: ['smoke', 'fire']
+nc: 2
