@@ -40,3 +40,6 @@ compositions/aihub_val_out_list.txt
 compositions/aihub_val_in_bal_list.txt
 compositions/aihub_val_out_bal_list.txt
 compositions/aihub_c3_train.txt
+
+# IFireSmoke (Sozol et al., HF: shahriar-5/IFireSmoke, 재현: 다운로드)
+/ifiresmoke/

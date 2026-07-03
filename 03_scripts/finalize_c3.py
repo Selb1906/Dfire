@@ -74,6 +74,9 @@ def main():
        "03_scripts/finalize_c3.py", "03_scripts/run_c3.bat", "compositions/aihub_c3.yaml")
     if sh("git", "commit", "-m", "AIHub 4셀 완성 — C3(균형·NM없음) 추가 + NM/균형 효과 분해") == 0:
         sh("git", "push", "origin", "yhh")
+    # IFireSmoke 체이닝 — GPU 유휴 상태에서 이어서 실행
+    sh("schtasks", "/Run", "/TN", "DesignA_IFS")
+    print("[체이닝] DesignA_IFS 트리거.", flush=True)
     sh("schtasks", "/Delete", "/TN", "DesignA_C3", "/F")
     print("[완료] C3 마무리 + 작업 정리.", flush=True)
     return 0
