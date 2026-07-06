@@ -1,0 +1,6 @@
+# held-out test full (7632장, 클립단위 분할). 0=smoke,1=fire.
+train: C:/YangHyunHo/DFire/compositions/heldout_full_list.txt
+val: C:/YangHyunHo/DFire/compositions/heldout_full_list.txt
+
+names: ['smoke', 'fire']
+nc: 2
