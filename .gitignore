@@ -43,3 +43,4 @@ compositions/aihub_c3_train.txt
 
 # IFireSmoke (Sozol et al., HF: shahriar-5/IFireSmoke, 재현: 다운로드)
 /ifiresmoke/
+compositions/heldout_*_list.txt

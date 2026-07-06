@@ -696,6 +696,7 @@ C4(11n)→C4_11s  0.736 → 0.749  (+1.3%p)  모델 확대 11n→11s
 - 균형·NM 모두 양(+)의 기여 → 데이터 구성 효과가 AIHub 대규모에서도 재현. NM 효과 +0.5%p.
 - **sanity**: C1/C2/C4 fresh 재평가 = R9(0.463/0.770/0.913)와 대조 → 동일 파이프라인·공유 val 재현성 확인.
 - 두 데이터셋 모두 균형·NM이 성능을 끌어올리나 크기는 데이터셋 의존(도메인 특성 차이).
+- **C3 상세지표(Table 2 보완)**: mAP@0.5:0.95=**0.664**, Precision=**0.898**, Recall=**0.859** (mAP@0.5=0.908, `runs/aihub_c3_summary.json`).
 - 산출물: `runs/AIHub_C3/weights/best.pt`, `runs/aihub_c3_summary.json`, `run_aihub_c3.py`.
 
 ---
